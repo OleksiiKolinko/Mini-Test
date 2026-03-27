@@ -20,22 +20,24 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class ProcessingLogServiceImpl implements ProcessingLogService {
+    private static final String HEADER_NAME = "X-Internal-Token";
+    private static final String URL_TRANSFORM = "/api/transform";
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
     private final ProcessingLogRepository logRepository;
-    @Value("${internal.token}")
-    private String internalToken;
     @Value("${service.b.url}")
     private String serviceUrl;
+    @Value("${internal.token}")
+    private String internalToken;
 
     public ProcessResponse process(String text, String email) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Internal-Token", internalToken);
+        headers.set(HEADER_NAME, internalToken);
         HttpEntity<ProcessRequest> request =
                 new HttpEntity<>(new ProcessRequest(text), headers);
         ResponseEntity<ProcessResponse> response =
                 restTemplate.postForEntity(
-                        serviceUrl + "/api/transform",
+                        serviceUrl + URL_TRANSFORM,
                         request, ProcessResponse.class);
         String result = Objects.requireNonNull(response.getBody()).result();
         User user = userRepository.findByEmail(email).orElseThrow();

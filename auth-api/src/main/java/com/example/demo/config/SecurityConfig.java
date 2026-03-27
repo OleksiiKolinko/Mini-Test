@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private static final String PATTERNS = "/api/auth/**";
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/api/auth/**")
+                                .requestMatchers(PATTERNS)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
